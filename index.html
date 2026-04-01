@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>金铲铲之战 · 三年月度数据看板</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:#e8ecf4;color:#1a1d23;padding:32px 24px}
+/* 标题区 */
+.hd{text-align:center;margin-bottom:36px}
+.hd h1{font-size:24px;font-weight:700;letter-spacing:2px;background:linear-gradient(90deg,#e6a800,#e8420a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:inline-block}
+.hd .sub{margin-top:8px;font-size:12px;color:#888;letter-spacing:1px}
+.badges{display:flex;gap:10px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.badge{font-size:11px;padding:4px 14px;border-radius:20px;font-weight:600;border:1px solid}
+.b24{background:rgba(56,139,253,.1);color:#1a6fd4;border-color:rgba(56,139,253,.3)}
+.b25{background:rgba(130,80,220,.1);color:#6b35c8;border-color:rgba(130,80,220,.3)}
+.b26{background:rgba(210,150,0,.1);color:#a07000;border-color:rgba(210,150,0,.3)}
+/* KPI卡片 */
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:40px}
+.kpi{background:#fff;border:1px solid #dce2f0;border-radius:12px;padding:16px 14px;text-align:center;box-shadow:0 4px 12px rgba(60,80,140,.10),0 1px 3px rgba(0,0,0,.06)}
+.kpi .label{font-size:11px;color:#888;margin-bottom:6px}
+.kpi .val{font-size:18px;font-weight:700}
+.kpi .tag{font-size:11px;margin-top:4px}
+.up{color:#1a9e3f}.down{color:#d93025}.flat{color:#b07d00}
+/* Section */
+.sec{margin-bottom:44px}
+.sec-hd{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid #d8def0}
+.sec-hd h2{font-size:15px;font-weight:600;color:#2c3040}
+.sec-hd .desc{font-size:11px;color:#aaa;margin-left:auto}
+/* 表格 */
+.wrap{overflow-x:auto;border-radius:12px;border:1px solid #dce2f0;box-shadow:0 4px 16px rgba(60,80,140,.10),0 1px 4px rgba(0,0,0,.06);background:#fff}
+table{width:100%;border-collapse:collapse;font-size:12.5px;min-width:980px}
+thead th{padding:11px 14px;text-align:center;font-weight:600;white-space:nowrap;border-bottom:1px solid #dce2f0}
+.th-m{background:#edf0f8;color:#7a82a0;font-size:11px;text-align:left;padding-left:18px}
+.th24{background:rgba(56,139,253,.13);color:#1a6fd4}
+.th25{background:rgba(130,80,220,.13);color:#6b35c8}
+.th26{background:rgba(210,150,0,.13);color:#a07000}
+.th-y25{background:rgba(26,158,63,.10);color:#1a9e3f;font-size:11px}
+.th-y26{background:rgba(217,48,37,.10);color:#d93025;font-size:11px}
+tbody tr{border-bottom:1px solid #edf0f8;transition:background .12s}
+tbody tr:hover{background:#f4f6fc}
+tbody tr:last-child{border-bottom:none}
+td{padding:10px 14px;text-align:center;white-space:nowrap;vertical-align:middle;color:#2c3040}
+td.m{font-weight:700;text-align:left;padding-left:18px;background:#edf0f8;color:#2c3040;border-right:1px solid #dce2f0}
+td.c24{background:rgba(56,139,253,.05);color:#1a4a8a}
+td.c25{background:rgba(130,80,220,.05);color:#4a2080}
+td.c26{background:rgba(210,150,0,.05);color:#6b4a00}
+td.cy25{background:rgba(26,158,63,.05)}
+td.cy26{background:rgba(217,48,37,.05)}
+/* 标签 */
+.tag{display:inline-flex;align-items:center;gap:2px;border-radius:5px;padding:2px 8px;font-size:11px;font-weight:700}
+.tup{background:rgba(26,158,63,.12);color:#1a9e3f}
+.tdn{background:rgba(217,48,37,.12);color:#d93025}
+.tfl{background:rgba(176,125,0,.12);color:#b07d00}
+.tna{color:#bbb}
+/* 迷你bar */
+.bar{width:72px;height:5px;background:#e8eaf0;border-radius:3px;margin:3px auto 0;overflow:hidden}
+.bf{height:100%;border-radius:3px}
+/* 环比 */
+.mu{color:#1a9e3f;font-size:11px}.md{color:#d93025;font-size:11px}.mf{color:#aaa;font-size:11px}
+/* Q行 */
+.qhd td{background:#e4e8f4!important;font-size:11px;color:#7a82a0;padding:5px 18px!important;letter-spacing:1px;border-top:1px solid #dce2f0!important}
+.qs td{background:#eef1f9!important;font-weight:600;border-top:1px dashed #dce2f0!important}
+.qs td.m{color:#555e80;font-size:11px}
+/* 合计行 */
+.total td{background:#fffadf!important;font-weight:700;border-top:2px solid #d4ae30!important}
+.total td.m{color:#8a6800}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <h1>🎮 金铲铲之战 · 三年月度数据看板</h1>
+  <div class="sub">统计周期：2024-01-01 ～ 2026-04-01 &nbsp;|&nbsp; 核心指标：日均DAU（活跃）· 月新增</div>
+  <div class="badges">
+    <span class="badge b24">🔵 2024年 全年</span>
+    <span class="badge b25">🟣 2025年 全年</span>
+    <span class="badge b26">🟡 2026年 Q1（截至4月1日）</span>
+  </div>
+</div>
+
+<!-- KPI卡片 -->
+<div class="kpi-row" id="kpiRow"></div>
+
+<!-- 日均DAU表格 -->
+<div class="sec">
+  <div class="sec-hd">
+    <span>📈</span>
+    <h2>活跃 · 日均DAU 月度对比</h2>
+    <span class="desc">日均DAU = 当月启动总量 ÷ 当月天数 &nbsp;|&nbsp; 单位：人次/天</span>
+  </div>
+  <div class="wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="th-m" rowspan="2">月份</th>
+          <th class="th24" colspan="3">2024年 日均DAU</th>
+          <th class="th25" colspan="3">2025年 日均DAU</th>
+          <th class="th-y25" colspan="2">同比 25↗24</th>
+          <th class="th26" colspan="3">2026年 日均DAU</th>
+          <th class="th-y26" colspan="2">同比 26↗25</th>
+        </tr>
+        <tr>
+          <th class="th24">日均DAU</th><th class="th24">环比</th><th class="th24">量级</th>
+          <th class="th25">日均DAU</th><th class="th25">环比</th><th class="th25">量级</th>
+          <th class="th-y25">增幅</th><th class="th-y25">趋势</th>
+          <th class="th26">日均DAU</th><th class="th26">环比</th><th class="th26">量级</th>
+          <th class="th-y26">增幅</th><th class="th-y26">趋势</th>
+        </tr>
+      </thead>
+      <tbody id="dauBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 新增表格 -->
+<div class="sec">
+  <div class="sec-hd">
+    <span>📥</span>
+    <h2>新增 · 月累计 月度对比</h2>
+    <span class="desc">数据来源：模拟器首次安装用户 &nbsp;|&nbsp; 单位：人次/月</span>
+  </div>
+  <div class="wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="th-m" rowspan="2">月份</th>
+          <th class="th24" colspan="3">2024年 新增</th>
+          <th class="th25" colspan="3">2025年 新增</th>
+          <th class="th-y25" colspan="2">同比 25↗24</th>
+          <th class="th26" colspan="3">2026年 新增</th>
+          <th class="th-y26" colspan="2">同比 26↗25</th>
+        </tr>
+        <tr>
+          <th class="th24">新增人数</th><th class="th24">环比</th><th class="th24">量级</th>
+          <th class="th25">新增人数</th><th class="th25">环比</th><th class="th25">量级</th>
+          <th class="th-y25">增幅</th><th class="th-y25">趋势</th>
+          <th class="th26">新增人数</th><th class="th26">环比</th><th class="th26">量级</th>
+          <th class="th-y26">增幅</th><th class="th-y26">趋势</th>
+        </tr>
+      </thead>
+      <tbody id="newBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// ===== 原始月度数据 =====
+const RAW = {
+  2024:[
+    {m:'1月',l:2350986,i:122455,days:31},{m:'2月',l:2000741,i:99008,days:29},
+    {m:'3月',l:2440388,i:98156,days:31},{m:'4月',l:2832183,i:97265,days:30},
+    {m:'5月',l:2725639,i:96497,days:31},{m:'6月',l:3261964,i:123662,days:30},
+    {m:'7月',l:2658745,i:114103,days:31},{m:'8月',l:3180938,i:123601,days:31},
+    {m:'9月',l:3440153,i:144559,days:30},{m:'10月',l:4066078,i:167994,days:31},
+    {m:'11月',l:4154768,i:143158,days:30},{m:'12月',l:3960315,i:122056,days:31}
+  ],
+  2025:[
+    {m:'1月',l:3959290,i:151775,days:31},{m:'2月',l:3940041,i:149145,days:28},
+    {m:'3月',l:5010352,i:158978,days:31},{m:'4月',l:4695860,i:141103,days:30},
+    {m:'5月',l:4034481,i:107515,days:31},{m:'6月',l:4179056,i:136543,days:30},
+    {m:'7月',l:3945663,i:120408,days:31},{m:'8月',l:4341735,i:144919,days:31},
+    {m:'9月',l:4226908,i:142679,days:30},{m:'10月',l:3307932,i:112110,days:31},
+    {m:'11月',l:2768080,i:87168,days:30},{m:'12月',l:4953895,i:170627,days:31}
+  ],
+  2026:[
+    {m:'1月',l:4752663,i:133925,days:31},{m:'2月',l:3974990,i:117798,days:28},
+    {m:'3月',l:4333660,i:104330,days:31},{m:'4月',l:null,i:null,days:30}
+  ]
+};
+
+// 计算日均DAU
+function dau(d){ return d.l!=null ? Math.round(d.l/d.days) : null; }
+
+const fmt = n => n==null?'—':n.toLocaleString('zh-CN');
+const pct = (a,b) => (a&&b&&a>0) ? ((b-a)/a*100).toFixed(1) : null;
+
+function yoyTag(v){
+  if(v==null) return '<span class="tna">—</span>';
+  const n=parseFloat(v), s=n>0?'+':'';
+  if(n>0.5)  return `<span class="tag tup">↑ ${s}${v}%</span>`;
+  if(n<-0.5) return `<span class="tag tdn">↓ ${v}%</span>`;
+  return `<span class="tag tfl">→ ${s}${v}%</span>`;
+}
+function momHtml(v){
+  if(v==null) return '<span class="mf">—</span>';
+  const n=parseFloat(v), s=n>0?'+':'';
+  if(n>1)  return `<span class="mu">↑ ${s}${v}%</span>`;
+  if(n<-1) return `<span class="md">↓ ${v}%</span>`;
+  return `<span class="mf">→ ${v}%</span>`;
+}
+function miniBar(v,mx,color){
+  if(!v||!mx) return '';
+  return `<div class="bar"><div class="bf" style="width:${(v/mx*100).toFixed(0)}%;background:${color}"></div></div>`;
+}
+function trend(v){ if(v==null) return ''; return parseFloat(v)>0?'📈':'📉'; }
+
+const QS = [
+  {name:'Q1 · 一季度',mi:[0,1,2],border:'rgba(56,139,253,.6)'},
+  {name:'Q2 · 二季度',mi:[3,4,5],border:'rgba(63,185,80,.6)'},
+  {name:'Q3 · 三季度',mi:[6,7,8],border:'rgba(255,189,46,.6)'},
+  {name:'Q4 · 四季度',mi:[9,10,11],border:'rgba(248,81,73,.6)'},
+];
+
+function buildTable(tbodyId, getVal, colors){
+  const [c24,c25,c26] = colors;
+  const tb = document.getElementById(tbodyId);
+  // 各年最大值 & 总计
+  const all24=RAW[2024].map(d=>getVal(d)).filter(x=>x!=null);
+  const all25=RAW[2025].map(d=>getVal(d)).filter(x=>x!=null);
+  const all26=RAW[2026].map(d=>getVal(d)).filter(x=>x!=null);
+  const mx24=Math.max(...all24), mx25=Math.max(...all25), mx26=Math.max(...all26);
+  const tot24=all24.reduce((s,x)=>s+x,0);
+  const tot25=all25.reduce((s,x)=>s+x,0);
+  const tot26=all26.reduce((s,x)=>s+x,0);
+
+  let html='';
+  QS.forEach(q=>{
+    html+=`<tr class="qhd"><td colspan="14" style="border-left:3px solid ${q.border}">◆ ${q.name}</td></tr>`;
+    q.mi.forEach(mi=>{
+      const d24=RAW[2024][mi], d25=RAW[2025][mi], d26=RAW[2026][mi]||null;
+      const v24=getVal(d24), v25=getVal(d25), v26=d26?getVal(d26):null;
+      const prev24=mi>0?getVal(RAW[2024][mi-1]):null;
+      const prev25=mi>0?getVal(RAW[2025][mi-1]):null;
+      const prev26=mi>0&&RAW[2026][mi-1]?getVal(RAW[2026][mi-1]):null;
+      const mom24=pct(prev24,v24), mom25=pct(prev25,v25), mom26=pct(prev26,v26);
+      const yoy25=pct(v24,v25), yoy26=v26!=null?pct(v25,v26):null;
+      const pct24=tot24?(v24/tot24*100).toFixed(1)+'%':'';
+      const pct25=tot25?(v25/tot25*100).toFixed(1)+'%':'';
+      const pct26=v26&&tot26?(v26/tot26*100).toFixed(1)+'%':'';
+      html+=`<tr>
+        <td class="m">${d24.m}</td>
+        <td class="c24">${fmt(v24)}<div style="font-size:10px;color:rgba(255,255,255,.28)">${pct24}</div></td>
+        <td class="c24">${momHtml(mom24)}</td>
+        <td class="c24">${miniBar(v24,mx24,c24)}</td>
+        <td class="c25">${fmt(v25)}<div style="font-size:10px;color:rgba(255,255,255,.28)">${pct25}</div></td>
+        <td class="c25">${momHtml(mom25)}</td>
+        <td class="c25">${miniBar(v25,mx25,c25)}</td>
+        <td class="cy25">${yoyTag(yoy25)}</td>
+        <td class="cy25" style="font-size:15px">${trend(yoy25)}</td>
+        <td class="c26">${v26!=null?fmt(v26)+'<div style="font-size:10px;color:rgba(255,255,255,.28)">'+pct26+'</div>':'<span class="tna">—</span>'}</td>
+        <td class="c26">${v26!=null?momHtml(mom26):'<span class="tna">—</span>'}</td>
+        <td class="c26">${v26!=null?miniBar(v26,mx26,c26):''}</td>
+        <td class="cy26">${yoyTag(yoy26)}</td>
+        <td class="cy26" style="font-size:15px">${trend(yoy26)}</td>
+      </tr>`;
+    });
+    // 季度小计
+    const sq24=q.mi.reduce((s,mi)=>{const v=getVal(RAW[2024][mi]);return s+(v||0);},0);
+    const sq25=q.mi.reduce((s,mi)=>{const v=getVal(RAW[2025][mi]);return s+(v||0);},0);
+    const sq26=q.mi.reduce((s,mi)=>{const d=RAW[2026][mi];const v=d?getVal(d):null;return s+(v||0);},0);
+    const has26=q.mi.some(mi=>RAW[2026][mi]&&getVal(RAW[2026][mi])!=null);
+    html+=`<tr class="qs">
+      <td class="m">▸ ${q.name.split('·')[0].trim()}小计</td>
+      <td class="c24" colspan="2"><b>${fmt(sq24)}</b></td><td class="c24"></td>
+      <td class="c25" colspan="2"><b>${fmt(sq25)}</b></td><td class="c25"></td>
+      <td class="cy25">${yoyTag(pct(sq24,sq25))}</td><td class="cy25">${trend(pct(sq24,sq25))}</td>
+      <td class="c26" colspan="2">${has26?'<b>'+fmt(sq26)+'</b>':'<span class="tna">—</span>'}</td><td class="c26"></td>
+      <td class="cy26">${has26?yoyTag(pct(sq25,sq26)):'<span class="tna">—</span>'}</td>
+      <td class="cy26">${has26?trend(pct(sq25,sq26)):''}</td>
+    </tr>`;
+  });
+  // 全年合计
+  const q1_25=RAW[2025].slice(0,3).reduce((s,d)=>{const v=getVal(d);return s+(v||0);},0);
+  html+=`<tr class="total">
+    <td class="m">📊 全年合计</td>
+    <td class="c24" colspan="2"><b>${fmt(tot24)}</b></td><td class="c24"></td>
+    <td class="c25" colspan="2"><b>${fmt(tot25)}</b></td><td class="c25"></td>
+    <td class="cy25">${yoyTag(pct(tot24,tot25))}</td><td class="cy25">${trend(pct(tot24,tot25))}</td>
+    <td class="c26" colspan="2"><b>${fmt(tot26)}</b><span style="font-size:10px;color:rgba(255,255,255,.3)"> Q1</span></td><td class="c26"></td>
+    <td class="cy26">${yoyTag(pct(q1_25,tot26))}</td><td class="cy26">${trend(pct(q1_25,tot26))}</td>
+  </tr>`;
+  tb.innerHTML=html;
+}
+
+// KPI卡片
+function buildKPI(){
+  const d = [
+    {label:'2025年 全年日均DAU',val:Math.round(RAW[2025].reduce((s,d)=>s+dau(d),0)/12),unit:'人/天',comp:Math.round(RAW[2024].reduce((s,d)=>s+dau(d),0)/12),yr:'vs 2024'},
+    {label:'2026年 Q1日均DAU',val:Math.round([0,1,2].reduce((s,i)=>s+dau(RAW[2026][i]),0)/3),unit:'人/天',comp:Math.round([0,1,2].reduce((s,i)=>s+dau(RAW[2025][i]),0)/3),yr:'vs 2025 Q1'},
+    {label:'2025年 全年新增',val:RAW[2025].reduce((s,d)=>s+d.i,0),unit:'人次',comp:RAW[2024].reduce((s,d)=>s+d.i,0),yr:'vs 2024'},
+    {label:'2026年 Q1新增',val:[0,1,2].reduce((s,i)=>s+RAW[2026][i].i,0),unit:'人次',comp:[0,1,2].reduce((s,i)=>s+RAW[2025][i].i,0),yr:'vs 2025 Q1'},
+    {label:'2025年 峰值日均DAU',val:Math.max(...RAW[2025].map(d=>dau(d))),unit:'人/天（3月）',comp:null},
+    {label:'2026年 峰值日均DAU',val:Math.max(...RAW[2026].filter(d=>d.l).map(d=>dau(d))),unit:'人/天（1月）',comp:null},
+  ];
+  const colors=['#79c0ff','#ffd166','#d2a8ff','#ffd166','#56d364','#56d364'];
+  document.getElementById('kpiRow').innerHTML = d.map((k,i)=>{
+    const r=k.comp?pct(k.comp,k.val):null;
+    const cls=r==null?'':parseFloat(r)>0?'up':'down';
+    const sign=r&&parseFloat(r)>0?'+':'';
+    return `<div class="kpi">
+      <div class="label">${k.label}</div>
+      <div class="val" style="color:${colors[i]}">${k.val.toLocaleString('zh-CN')}</div>
+      <div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:2px">${k.unit}</div>
+      ${r?`<div class="tag ${cls}" style="font-size:11px;margin-top:6px">${parseFloat(r)>0?'↑':'↓'} ${sign}${r}% ${k.yr}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+buildKPI();
+buildTable('dauBody', d=>dau(d), ['#388bfd','#8957e5','#d29922']);
+buildTable('newBody', d=>d.i,    ['#388bfd','#8957e5','#d29922']);
+</script>
+</body>
+</html>
