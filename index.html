@@ -416,8 +416,6 @@ function buildChart(data) {
   const labels = data.map(d => d.d);
   const n = data.length;
   const step = n<=31?1 : n<=90?7 : n<=180?14 : n<=366?30 : 60;
-
-  const step = n<=31?1 : n<=90?7 : n<=180?14 : n<=366?30 : 60;
   const sharedTooltip = {
     backgroundColor:'rgba(255,255,255,.97)',
     borderColor:'#e0e4eb', borderWidth:1,
