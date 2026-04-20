@@ -158,8 +158,8 @@ tr.anom-row:hover td{background:#fff5eb}
   <div class="chart-hdr">
     <h2>📥 新增趋势图 · 首次安装（新增用户）</h2>
     <div class="legend">
-      <div class="leg"><div class="leg-bar" style="background:rgba(26,115,232,.6)"></div>首次安装</div>
-      <div class="leg"><div class="leg-line" style="background:#85b8f5;height:1px;border-top:1px dashed #85b8f5"></div>21日滚动均值</div>
+      <div class="leg"><div class="leg-line" style="background:#1a73e8"></div>首次安装</div>
+      <div class="leg"><div class="leg-line" style="background:#85b8f5"></div>21日滚动均值</div>
       <div class="leg"><div class="leg-dot" style="border-color:#1a8e3e;background:#1a8e3e"></div>新增异常偏高</div>
       <div class="leg"><span style="font-size:11px;color:#e66400">⁻⁻ 版本节点</span></div>
     </div>
@@ -489,22 +489,20 @@ function buildChart(data) {
 
   if (chartNew) { chartNew.destroy(); chartNew = null; }
   chartNew = new Chart(document.getElementById('newChart').getContext('2d'), {
-    type:'bar',
+    type:'line',
     data:{ labels, datasets:[
       {
-        type:'bar', label:'首次安装（新增）', data:newData,
-        backgroundColor: data.map(d =>
-          (d.a==='new_up'||d.a==='both_up') ? 'rgba(26,142,63,.55)' : 'rgba(26,115,232,.25)'
-        ),
-        borderColor:'transparent', borderWidth:0, borderRadius:2,
-        yAxisID:'y', order:2
+        label:'首次安装（新增）', data:newData,
+        borderColor:'#1a73e8', backgroundColor:'rgba(26,115,232,.08)',
+        borderWidth:2, fill:true, tension:0.3,
+        pointRadius:ptRN, pointBackgroundColor:ptBgN, pointBorderColor:ptBgN,
+        pointBorderWidth:0, pointHoverRadius:6, spanGaps:true, order:1
       },
       {
-        type:'line', label:'21日滚动均值', data:rollNewD,
-        borderColor:'rgba(120,170,240,.8)', backgroundColor:'transparent',
-        borderWidth:1.5, borderDash:[4,3], fill:false, tension:0.3,
-        pointRadius:ptRN, pointBackgroundColor:ptBgN, pointBorderColor:ptBgN,
-        pointBorderWidth:0, pointHoverRadius:6, spanGaps:true, yAxisID:'y', order:1
+        label:'21日滚动均值', data:rollNewD,
+        borderColor:'rgba(100,160,230,.7)', backgroundColor:'transparent',
+        borderWidth:1.5, fill:false, tension:0.3,
+        pointRadius:0, pointHoverRadius:0, spanGaps:true, order:2
       }
     ]},
     options:{
