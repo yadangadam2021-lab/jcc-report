@@ -71,11 +71,11 @@ td.cy26{background:rgba(217,48,37,.05)}
 
 <div class="hd">
   <h1>🎮 金铲铲之战 · 三年月度数据看板</h1>
-  <div class="sub">统计周期：2024-01-01 ～ 2026-04-01 &nbsp;|&nbsp; 核心指标：日均DAU（活跃）· 月新增</div>
+  <div class="sub">统计周期：2024-01-01 ～ 2026-04-19 &nbsp;|&nbsp; 核心指标：日均DAU（活跃）· 月新增</div>
   <div class="badges">
     <span class="badge b24">🔵 2024年 全年</span>
     <span class="badge b25">🟣 2025年 全年</span>
-    <span class="badge b26">🟡 2026年 Q1（截至4月1日）</span>
+    <span class="badge b26">🟡 2026年 Q1+4月（截至4月19日）</span>
   </div>
 </div>
 
@@ -165,7 +165,7 @@ const RAW = {
   ],
   2026:[
     {m:'1月',l:4752663,i:133925,days:31},{m:'2月',l:3974990,i:117798,days:28},
-    {m:'3月',l:4333660,i:104330,days:31},{m:'4月',l:null,i:null,days:30}
+    {m:'3月',l:4333660,i:104330,days:31},{m:'4月',l:2003022,i:45735,days:19,partial:true}
   ]
 };
 
@@ -281,7 +281,7 @@ function buildKPI(){
     {label:'2025年 全年新增',val:RAW[2025].reduce((s,d)=>s+d.i,0),unit:'人次',comp:RAW[2024].reduce((s,d)=>s+d.i,0),yr:'vs 2024'},
     {label:'2026年 Q1新增',val:[0,1,2].reduce((s,i)=>s+RAW[2026][i].i,0),unit:'人次',comp:[0,1,2].reduce((s,i)=>s+RAW[2025][i].i,0),yr:'vs 2025 Q1'},
     {label:'2025年 峰值日均DAU',val:Math.max(...RAW[2025].map(d=>dau(d))),unit:'人/天（3月）',comp:null},
-    {label:'2026年 峰值日均DAU',val:Math.max(...RAW[2026].filter(d=>d.l).map(d=>dau(d))),unit:'人/天（1月）',comp:null},
+    {label:'2026年 峰值日均DAU',val:Math.max(...RAW[2026].filter(d=>d.l).map(d=>dau(d))),unit:'人/天（3月）',comp:null},
   ];
   const colors=['#79c0ff','#ffd166','#d2a8ff','#ffd166','#56d364','#56d364'];
   document.getElementById('kpiRow').innerHTML = d.map((k,i)=>{
