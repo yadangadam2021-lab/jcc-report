@@ -196,6 +196,106 @@ tr.anom-row:hover td{background:#fff5eb}
   </div>
 </div>
 
+<!-- ══════════ 对比分析模块 ══════════ -->
+<div class="card" id="compareCard">
+  <div class="chart-hdr" style="margin-bottom:10px">
+    <h2>🔀 对比分析</h2>
+    <span style="font-size:11px;color:#8f959e">选择对比模式，在同一图上叠加两段数据</span>
+  </div>
+
+  <!-- 对比模式 Tab -->
+  <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+    <button class="btn active" id="cmpTab-yoy"   onclick="switchCmpMode('yoy')">📅 年同比</button>
+    <button class="btn"        id="cmpTab-mom"   onclick="switchCmpMode('mom')">🗓 月环比</button>
+    <button class="btn"        id="cmpTab-week"  onclick="switchCmpMode('week')">📆 周对比</button>
+    <button class="btn"        id="cmpTab-custom"onclick="switchCmpMode('custom')">✏️ 自定义</button>
+  </div>
+
+  <!-- 年同比面板 -->
+  <div id="cmp-yoy" class="cmp-panel">
+    <div class="filter-row">
+      <span class="filter-label">时间段</span>
+      <input id="yoyRange" class="range-input" placeholder="选择日期范围…" readonly style="width:220px">
+      <span style="font-size:11px;color:#8f959e;margin-left:4px">系统自动对齐上一年同期</span>
+    </div>
+    <div class="filter-row" style="gap:6px;margin-top:6px">
+      <span class="filter-label">快捷</span>
+      <button class="btn" onclick="yoyQuick('Q1')">Q1</button>
+      <button class="btn" onclick="yoyQuick('Q2')">Q2</button>
+      <button class="btn" onclick="yoyQuick('Q3')">Q3</button>
+      <button class="btn" onclick="yoyQuick('Q4')">Q4</button>
+      <button class="btn" onclick="yoyQuick('Jan')">1月</button>
+      <button class="btn" onclick="yoyQuick('Feb')">2月</button>
+      <button class="btn" onclick="yoyQuick('Mar')">3月</button>
+      <button class="btn" onclick="yoyQuick('Apr')">4月</button>
+      <button class="btn" onclick="yoyQuick('May')">5月</button>
+      <button class="btn" onclick="yoyQuick('Jun')">6月</button>
+      <button class="btn" onclick="yoyQuick('Jul')">7月</button>
+      <button class="btn" onclick="yoyQuick('Aug')">8月</button>
+      <button class="btn" onclick="yoyQuick('Sep')">9月</button>
+      <button class="btn" onclick="yoyQuick('Oct')">10月</button>
+      <button class="btn" onclick="yoyQuick('Nov')">11月</button>
+      <button class="btn" onclick="yoyQuick('Dec')">12月</button>
+    </div>
+    <button class="btn-primary" style="margin-top:8px" onclick="runCompare()">生成对比图</button>
+  </div>
+
+  <!-- 月环比面板 -->
+  <div id="cmp-mom" class="cmp-panel" style="display:none">
+    <div class="filter-row">
+      <span class="filter-label">基准月</span>
+      <select id="momYear" class="range-input" style="width:90px"></select>
+      <select id="momMonth" class="range-input" style="width:70px"></select>
+      <span style="font-size:12px;color:#8f959e;margin:0 6px">vs 上一个月</span>
+    </div>
+    <button class="btn-primary" style="margin-top:8px" onclick="runCompare()">生成对比图</button>
+  </div>
+
+  <!-- 周对比面板 -->
+  <div id="cmp-week" class="cmp-panel" style="display:none">
+    <div class="filter-row">
+      <span class="filter-label">基准周</span>
+      <input id="weekPick" class="range-input" placeholder="选择该周任意一天…" readonly style="width:180px">
+      <span style="font-size:11px;color:#8f959e;margin-left:4px">自动对齐上一周（Mon-Sun）</span>
+    </div>
+    <button class="btn-primary" style="margin-top:8px" onclick="runCompare()">生成对比图</button>
+  </div>
+
+  <!-- 自定义面板 -->
+  <div id="cmp-custom" class="cmp-panel" style="display:none">
+    <div class="filter-row">
+      <span class="filter-label" style="width:50px">时段 A</span>
+      <input id="customA" class="range-input" placeholder="选择时段 A…" readonly style="width:220px">
+    </div>
+    <div class="filter-row" style="margin-top:6px">
+      <span class="filter-label" style="width:50px">时段 B</span>
+      <input id="customB" class="range-input" placeholder="选择时段 B…" readonly style="width:220px">
+    </div>
+    <div style="font-size:11px;color:#8f959e;margin-top:4px">两段时长不同时，按较短段对齐截取</div>
+    <button class="btn-primary" style="margin-top:8px" onclick="runCompare()">生成对比图</button>
+  </div>
+
+  <!-- 对比图区 -->
+  <div id="cmpResult" style="display:none;margin-top:16px">
+    <!-- 标题栏 -->
+    <div id="cmpTitle" style="font-size:13px;font-weight:600;color:#1f2329;margin-bottom:10px"></div>
+    <!-- KPI diff 行 -->
+    <div id="cmpKpi" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px"></div>
+    <!-- 活跃叠加图 -->
+    <div style="margin-bottom:6px;font-size:12px;font-weight:600;color:#1f2329">📈 DAU 叠加对比</div>
+    <div class="chart-wrap"><canvas id="cmpDauChart" height="130"></canvas></div>
+    <!-- 活跃差值图 -->
+    <div style="margin-top:12px;margin-bottom:6px;font-size:12px;font-weight:600;color:#1f2329">📊 DAU 差值（A − B）</div>
+    <div class="chart-wrap"><canvas id="cmpDauDiffChart" height="80"></canvas></div>
+    <!-- 新增叠加图 -->
+    <div style="margin-top:16px;margin-bottom:6px;font-size:12px;font-weight:600;color:#1f2329">📥 新增 叠加对比</div>
+    <div class="chart-wrap"><canvas id="cmpNewChart" height="130"></canvas></div>
+    <!-- 新增差值图 -->
+    <div style="margin-top:12px;margin-bottom:6px;font-size:12px;font-weight:600;color:#1f2329">📊 新增 差值（A − B）</div>
+    <div class="chart-wrap"><canvas id="cmpNewDiffChart" height="80"></canvas></div>
+  </div>
+</div>
+
 <!-- Daily Data Table -->
 <div class="card">
   <div class="tbl-hdr">
@@ -611,6 +711,299 @@ function saveVersion(input) {
   buildChart(filteredData);  // refresh annotations
 }
 
+// ══════════════════════════════════════════════════════
+// ── Compare Module ────────────────────────────────────
+// ══════════════════════════════════════════════════════
+let cmpMode = 'yoy';
+let cmpCharts = {};  // stores Chart instances keyed by id
+
+// ── init pickers for compare module ──────────────────
+function initComparePickers() {
+  flatpickr('#yoyRange',  {mode:'range',locale:'zh',dateFormat:'Y-m-d',minDate:MIN_DATE,maxDate:MAX_DATE});
+  flatpickr('#customA',   {mode:'range',locale:'zh',dateFormat:'Y-m-d',minDate:MIN_DATE,maxDate:MAX_DATE});
+  flatpickr('#customB',   {mode:'range',locale:'zh',dateFormat:'Y-m-d',minDate:MIN_DATE,maxDate:MAX_DATE});
+  flatpickr('#weekPick',  {mode:'single',locale:'zh',dateFormat:'Y-m-d',minDate:MIN_DATE,maxDate:MAX_DATE});
+
+  // populate mom selects
+  const ys = [...new Set(ALL_DATA.map(d=>d.d.slice(0,4)))].sort();
+  const ysel = document.getElementById('momYear');
+  ys.forEach(y=>{ const o=document.createElement('option'); o.value=y; o.textContent=y+'年'; ysel.appendChild(o); });
+  ysel.value = ys[ys.length-1];
+  const msel = document.getElementById('momMonth');
+  for(let m=1;m<=12;m++){const o=document.createElement('option');o.value=String(m).padStart(2,'0');o.textContent=m+'月';msel.appendChild(o);}
+  const today = new Date(MAX_DATE);
+  msel.value = String(today.getMonth()+1).padStart(2,'0');
+}
+
+// ── switch mode tab ───────────────────────────────────
+function switchCmpMode(mode) {
+  cmpMode = mode;
+  ['yoy','mom','week','custom'].forEach(m=>{
+    document.getElementById('cmp-'+m).style.display = m===mode?'':'none';
+    document.getElementById('cmpTab-'+m).className = 'btn'+(m===mode?' active':'');
+  });
+  document.getElementById('cmpResult').style.display='none';
+}
+
+// ── year-quick shortcuts ──────────────────────────────
+function yoyQuick(key) {
+  const refEnd  = MAX_DATE;
+  const refYear = parseInt(refEnd.slice(0,4));
+  let s, e;
+  const mo = {Jan:'01',Feb:'02',Mar:'03',Apr:'04',May:'05',Jun:'06',
+               Jul:'07',Aug:'08',Sep:'09',Oct:'10',Nov:'11',Dec:'12'};
+  if (key in mo) {
+    const pad = mo[key];
+    const days = new Date(refYear, parseInt(pad), 0).getDate();
+    s = `${refYear}-${pad}-01`;
+    e = `${refYear}-${pad}-${days}`;
+    if (e > MAX_DATE) e = MAX_DATE;
+  } else {
+    const qMap = {Q1:[1,3],Q2:[4,6],Q3:[7,9],Q4:[10,12]};
+    const [ms,me] = qMap[key];
+    s = `${refYear}-${String(ms).padStart(2,'0')}-01`;
+    const de = new Date(refYear, me, 0).getDate();
+    e = `${refYear}-${String(me).padStart(2,'0')}-${de}`;
+    if (e > MAX_DATE) e = MAX_DATE;
+  }
+  const fpInst = document.getElementById('yoyRange')._flatpickr;
+  if (fpInst) fpInst.setDate([s, e]);
+}
+
+// ── parse two segments based on mode ─────────────────
+function parseSegments() {
+  if (cmpMode === 'yoy') {
+    const fpInst = document.getElementById('yoyRange')._flatpickr;
+    if (!fpInst||fpInst.selectedDates.length<2) { alert('请先选择日期范围'); return null; }
+    const sA = fpInst.selectedDates[0].toISOString().slice(0,10);
+    const eA = fpInst.selectedDates[1].toISOString().slice(0,10);
+    // build all year variants
+    const years = [...new Set(ALL_DATA.map(d=>parseInt(d.d.slice(0,4))))].sort();
+    const refYear = parseInt(sA.slice(0,4));
+    const segs = [];
+    years.forEach(y => {
+      const delta = y - refYear;
+      const ss = shiftYear(sA, delta), se = shiftYear(eA, delta);
+      const rows = ALL_DATA.filter(d=>d.d>=ss&&d.d<=se);
+      if (rows.length>0) segs.push({label:y+'年', color: y===2024?'#6e3fbe': y===2025?'#1a73e8':'#e8a000', data:rows, start:ss, end:se});
+    });
+    return segs;
+  }
+  if (cmpMode === 'mom') {
+    const y = document.getElementById('momYear').value;
+    const m = document.getElementById('momMonth').value;
+    const mi = parseInt(m);
+    // current month
+    const days = new Date(parseInt(y), mi, 0).getDate();
+    const sA = `${y}-${m}-01`, eA = `${y}-${m}-${days}` > MAX_DATE ? MAX_DATE : `${y}-${m}-${days}`;
+    // prev month
+    const pm = mi===1 ? 12 : mi-1, py = mi===1 ? parseInt(y)-1 : parseInt(y);
+    const pd = new Date(py, pm, 0).getDate();
+    const pmStr = String(pm).padStart(2,'0'), pyStr = String(py);
+    const sB = `${pyStr}-${pmStr}-01`, eB = `${pyStr}-${pmStr}-${pd}`;
+    const dA = ALL_DATA.filter(d=>d.d>=sA&&d.d<=eA);
+    const dB = ALL_DATA.filter(d=>d.d>=sB&&d.d<=eB);
+    if(!dA.length||!dB.length){alert('所选月份无数据');return null;}
+    return [
+      {label:`${y}年${mi}月（本月）`, color:'#1a73e8', data:dA, start:sA, end:eA},
+      {label:`${pyStr}年${pm}月（上月）`, color:'#6e3fbe', data:dB, start:sB, end:eB},
+    ];
+  }
+  if (cmpMode === 'week') {
+    const fpInst = document.getElementById('weekPick')._flatpickr;
+    if (!fpInst||!fpInst.selectedDates.length){alert('请选择基准周任意一天');return null;}
+    const pick = fpInst.selectedDates[0];
+    const dow  = pick.getDay(); // 0=Sun
+    const mon  = new Date(pick); mon.setDate(pick.getDate() - (dow===0?6:dow-1));
+    const sun  = new Date(mon);  sun.setDate(mon.getDate()+6);
+    const sA   = mon.toISOString().slice(0,10);
+    const eA   = sun.toISOString().slice(0,10) > MAX_DATE ? MAX_DATE : sun.toISOString().slice(0,10);
+    const sB   = shiftYear(sA, 0); // prev week
+    const prevMon = new Date(mon); prevMon.setDate(mon.getDate()-7);
+    const prevSun = new Date(sun); prevSun.setDate(sun.getDate()-7);
+    const sBw  = prevMon.toISOString().slice(0,10);
+    const eBw  = prevSun.toISOString().slice(0,10);
+    const dA   = ALL_DATA.filter(d=>d.d>=sA&&d.d<=eA);
+    const dB   = ALL_DATA.filter(d=>d.d>=sBw&&d.d<=eBw);
+    if(!dA.length||!dB.length){alert('所选周无数据');return null;}
+    return [
+      {label:`本周 ${sA}~${eA}`, color:'#1a73e8', data:dA, start:sA, end:eA},
+      {label:`上周 ${sBw}~${eBw}`, color:'#6e3fbe', data:dB, start:sBw, end:eBw},
+    ];
+  }
+  if (cmpMode === 'custom') {
+    const fpA = document.getElementById('customA')._flatpickr;
+    const fpB = document.getElementById('customB')._flatpickr;
+    if(!fpA||fpA.selectedDates.length<2||!fpB||fpB.selectedDates.length<2){alert('请选择时段 A 和时段 B');return null;}
+    const sA=fpA.selectedDates[0].toISOString().slice(0,10), eA=fpA.selectedDates[1].toISOString().slice(0,10);
+    const sB=fpB.selectedDates[0].toISOString().slice(0,10), eB=fpB.selectedDates[1].toISOString().slice(0,10);
+    let dA=ALL_DATA.filter(d=>d.d>=sA&&d.d<=eA);
+    let dB=ALL_DATA.filter(d=>d.d>=sB&&d.d<=eB);
+    // align by shorter length
+    const minLen = Math.min(dA.length, dB.length);
+    dA = dA.slice(0, minLen); dB = dB.slice(0, minLen);
+    if(!dA.length||!dB.length){alert('所选时段无数据');return null;}
+    return [
+      {label:`时段A ${sA}~${eA}`, color:'#1a73e8', data:dA, start:sA, end:eA},
+      {label:`时段B ${sB}~${eB}`, color:'#6e3fbe', data:dB, start:sB, end:eB},
+    ];
+  }
+  return null;
+}
+
+// ── run compare ───────────────────────────────────────
+function runCompare() {
+  const segs = parseSegments();
+  if (!segs || segs.length < 2) return;
+  document.getElementById('cmpResult').style.display = '';
+
+  // title
+  const titleStr = segs.map(s=>s.label).join('  vs  ');
+  document.getElementById('cmpTitle').textContent = '📊 ' + titleStr;
+
+  // use day-index as x axis (0, 1, 2 …), tooltip shows actual date per seg
+  const minLen = Math.min(...segs.map(s=>s.data.length));
+  const xLabels = segs[0].data.slice(0,minLen).map((_,i)=>'第'+(i+1)+'天');
+
+  // KPI summary
+  renderCmpKpi(segs, minLen);
+
+  // overlay charts
+  buildCmpOverlay('cmpDauChart',    segs, minLen, 'l', 'DAU（启动量）',  'y');
+  buildCmpOverlay('cmpNewChart',    segs, minLen, 'n', '首次安装（新增）','y');
+  buildCmpDiff(   'cmpDauDiffChart',segs, minLen, 'l', 'DAU 差值');
+  buildCmpDiff(   'cmpNewDiffChart',segs, minLen, 'n', '新增 差值');
+
+  // scroll into view
+  document.getElementById('cmpResult').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ── KPI diff cards ────────────────────────────────────
+function renderCmpKpi(segs, minLen) {
+  const wrap = document.getElementById('cmpKpi');
+  const base = segs[segs.length-1]; // last = oldest / reference
+  let html = '';
+  segs.forEach(seg => {
+    const tl = seg.data.slice(0,minLen).reduce((s,d)=>s+d.l,0);
+    const tn = seg.data.slice(0,minLen).reduce((s,d)=>s+d.n,0);
+    const avgL = Math.round(tl/minLen), avgN = Math.round(tn/minLen);
+    const btl  = base.data.slice(0,minLen).reduce((s,d)=>s+d.l,0);
+    const bAvgL= Math.round(btl/minLen);
+    const pct  = seg===base ? null : ((avgL-bAvgL)/bAvgL*100).toFixed(1);
+    const sign = pct>=0 ? '+' : ''; const cls = pct==null?'neu':pct>=0?'cup':'cdn';
+    html += `<div class="kpi" style="border-left:3px solid ${seg.color}">
+      <div class="kpi-lbl">${seg.label}</div>
+      <div class="kpi-val" style="font-size:17px">${fmt(avgL)}</div>
+      <div style="font-size:10px;color:#8f959e;margin-top:2px">日均DAU</div>
+      ${pct!=null?`<div class="kpi-chg ${cls}" style="margin-top:4px">${sign}${pct}% vs ${base.label}</div>`:'<div class="kpi-chg neu" style="margin-top:4px">基准段</div>'}
+      <div style="font-size:10px;color:#b0b8c4;margin-top:2px">日均新增 ${fmt(avgN)}</div>
+    </div>`;
+  });
+  wrap.innerHTML = html;
+}
+
+// ── overlay chart ─────────────────────────────────────
+function buildCmpOverlay(canvasId, segs, minLen, field, yLabel, yId) {
+  if (cmpCharts[canvasId]) { cmpCharts[canvasId].destroy(); }
+  const xLabels = Array.from({length:minLen},(_,i)=>'D'+(i+1));
+  const n = minLen;
+  const step = n<=31?1:n<=90?7:n<=180?14:30;
+  const datasets = segs.map(seg => ({
+    label: seg.label,
+    data: seg.data.slice(0,minLen).map(d=>d[field]),
+    borderColor: seg.color,
+    backgroundColor: seg.color.replace(')',',0.07)').replace('rgb(','rgba('),
+    borderWidth: 2, fill: true, tension: 0.3,
+    pointRadius: 0, pointHoverRadius: 5, spanGaps: true,
+  }));
+  cmpCharts[canvasId] = new Chart(document.getElementById(canvasId).getContext('2d'), {
+    type:'line', data:{labels:xLabels, datasets},
+    options:{
+      responsive:true, animation:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:true, labels:{font:{size:11},boxWidth:14,padding:12}},
+        tooltip:{
+          backgroundColor:'rgba(255,255,255,.97)',borderColor:'#e0e4eb',borderWidth:1,
+          titleColor:'#333',bodyColor:'#555',
+          callbacks:{
+            title: items => {
+              const i = items[0].dataIndex;
+              return segs.map(s=>s.data[i]?s.data[i].d:'').join('  /  ');
+            },
+            label: ctx => ` ${ctx.dataset.label}: ${fmt(ctx.parsed.y)}`
+          }
+        }
+      },
+      scales:{
+        x:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{size:10},maxRotation:0,callback:(v,i)=>i%step===0?xLabels[i]:''}},
+        y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{size:10},callback:v=>fmt(v)},title:{display:true,text:yLabel,font:{size:10},color:'#8f959e'}}
+      }
+    }
+  });
+}
+
+// ── diff chart ────────────────────────────────────────
+function buildCmpDiff(canvasId, segs, minLen, field, yLabel) {
+  if (cmpCharts[canvasId]) { cmpCharts[canvasId].destroy(); }
+  const xLabels = Array.from({length:minLen},(_,i)=>'D'+(i+1));
+  const n = minLen;
+  const step = n<=31?1:n<=90?7:n<=180?14:30;
+  // diff = seg[0] - seg[last] (newest vs oldest)
+  const ref = segs[segs.length-1];
+  const cur = segs[0];
+  const diffData = cur.data.slice(0,minLen).map((d,i)=>{
+    const rv = ref.data[i] ? ref.data[i][field] : null;
+    return rv!=null ? d[field]-rv : null;
+  });
+  const colors = diffData.map(v=>v==null?'transparent':v>=0?'rgba(26,142,63,.6)':'rgba(217,48,37,.55)');
+  cmpCharts[canvasId] = new Chart(document.getElementById(canvasId).getContext('2d'), {
+    type:'bar', data:{labels:xLabels, datasets:[{
+      label: `${cur.label} − ${ref.label}`,
+      data: diffData,
+      backgroundColor: colors,
+      borderColor:'transparent', borderWidth:0, borderRadius:2,
+    }]},
+    options:{
+      responsive:true, animation:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'rgba(255,255,255,.97)',borderColor:'#e0e4eb',borderWidth:1,
+          titleColor:'#333',bodyColor:'#555',
+          callbacks:{
+            title: items => {
+              const i = items[0].dataIndex;
+              return `${cur.data[i]?.d||''}  /  ${ref.data[i]?.d||''}`;
+            },
+            label: ctx => {
+              const v = ctx.parsed.y;
+              return ` 差值: ${v>=0?'+':''}${fmt(v)}`;
+            }
+          }
+        }
+      },
+      scales:{
+        x:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{size:10},maxRotation:0,callback:(v,i)=>i%step===0?xLabels[i]:''}},
+        y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{size:10},callback:v=>fmt(v)},
+           title:{display:true,text:yLabel,font:{size:10},color:'#8f959e'}}
+      }
+    }
+  });
+}
+
+// ── css helper ────────────────────────────────────────
+(function injectCmpCss(){
+  const s = document.createElement('style');
+  s.textContent = `.cmp-panel{padding:4px 0}`;
+  document.head.appendChild(s);
+})();
+
+// ── attach init to DOMContentLoaded ──────────────────
+document.addEventListener('DOMContentLoaded', () => { initComparePickers(); });
+
+// ══════════════════════════════════════════════════════
 function loadVersionAnnotations() {
   EVENTS.forEach(e => {
     const saved = localStorage.getItem('jcc_ver_'+e.d);
