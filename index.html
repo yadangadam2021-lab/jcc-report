@@ -86,6 +86,29 @@ tr.anom-row:hover td{background:#fff5eb}
 .leg-dot{width:9px;height:9px;border-radius:50%;border:2px solid}
 /* ── No data ── */
 .no-data{text-align:center;color:#b0b8c4;padding:24px;font-size:12px}
+/* ── Data Label Annotation Modal ── */
+#annotModal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.35);align-items:center;justify-content:center}
+#annotModal.open{display:flex}
+.annot-box{background:#fff;border-radius:14px;padding:22px 24px;min-width:320px;max-width:420px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.18)}
+.annot-box h3{font-size:14px;font-weight:700;color:#1f2329;margin-bottom:4px}
+.annot-date{font-size:12px;color:#8f959e;margin-bottom:14px}
+.annot-input{width:100%;border:1px solid #e0e4eb;border-radius:7px;padding:8px 10px;font-size:13px;outline:none;transition:border .15s;color:#1f2329;font-family:inherit}
+.annot-input:focus{border-color:#6e3fbe}
+.annot-icon-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}
+.annot-icon{font-size:18px;cursor:pointer;padding:4px 6px;border-radius:6px;border:2px solid transparent;transition:border .15s;line-height:1}
+.annot-icon.selected{border-color:#6e3fbe;background:#f5f0ff}
+.annot-actions{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+.annot-save{background:#6e3fbe;color:#fff;border:none;border-radius:7px;padding:7px 18px;font-size:13px;cursor:pointer;font-weight:600}
+.annot-save:hover{background:#5c35cc}
+.annot-del{background:#fff;color:#b02020;border:1px solid #f0c0c0;border-radius:7px;padding:7px 14px;font-size:13px;cursor:pointer}
+.annot-del:hover{background:#fff5f5}
+.annot-cancel{background:#f5f5f5;color:#555;border:1px solid #e0e4eb;border-radius:7px;padding:7px 14px;font-size:13px;cursor:pointer}
+.annot-cancel:hover{background:#ebebeb}
+/* ── Annotation chip in chart header ── */
+.annot-chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.annot-chip{display:inline-flex;align-items:center;gap:4px;background:#f5f0ff;border:1px solid #c4a8f5;border-radius:5px;padding:2px 8px 2px 6px;font-size:11px;color:#5c35cc;cursor:pointer;transition:background .12s}
+.annot-chip:hover{background:#ede5ff}
+.chart-annot-hint{font-size:10px;color:#b0b8c4;margin-top:4px}
 /* ── Responsive ── */
 @media(max-width:768px){
   .kpi-row{grid-template-columns:repeat(2,1fr)}
@@ -148,9 +171,8 @@ tr.anom-row:hover td{background:#fff5eb}
   <div class="chart-wrap">
     <canvas id="dauChart" height="140"></canvas>
   </div>
-  <div style="margin-top:6px;font-size:10px;color:#b0b8c4">
-    ⚡ 彩色圆点 = 偏离21日滚动均值 ≥2σ 的统计异常；鼠标悬停查看偏离详情
-  </div>
+  <div class="annot-chips" id="dauAnnotChips"></div>
+  <div class="chart-annot-hint">⚡ 彩色圆点 = 偏离均值 ≥2σ 的统计异常；鼠标悬停查看详情 &nbsp;|&nbsp; 🖱️ 点击图表任意位置可添加标注</div>
 </div>
 
 <!-- Chart - New Installs -->
@@ -167,9 +189,8 @@ tr.anom-row:hover td{background:#fff5eb}
   <div class="chart-wrap">
     <canvas id="newChart" height="140"></canvas>
   </div>
-  <div style="margin-top:6px;font-size:10px;color:#b0b8c4">
-    ⚡ 绿色圆点 = 新增偏离均值 ≥2σ 的统计异常；鼠标悬停查看详情
-  </div>
+  <div class="annot-chips" id="newAnnotChips"></div>
+  <div class="chart-annot-hint">⚡ 绿色圆点 = 新增偏离均值 ≥2σ 的统计异常；鼠标悬停查看详情 &nbsp;|&nbsp; 🖱️ 点击图表任意位置可添加标注</div>
 </div>
 
 <!-- Anomaly Events & Version Panel -->
@@ -319,6 +340,36 @@ tr.anom-row:hover td{background:#fff5eb}
 </div>
 
 </div><!-- /wrap -->
+
+<!-- ── Data Label Annotation Modal ── -->
+<div id="annotModal" onclick="if(event.target===this)closeAnnotModal()">
+  <div class="annot-box">
+    <h3 id="annotChartTitle">📌 添加数据标注</h3>
+    <div class="annot-date" id="annotDateInfo"></div>
+    <div style="font-size:12px;color:#555;margin-bottom:6px">选择图标</div>
+    <div class="annot-icon-row" id="annotIconRow">
+      <span class="annot-icon selected" data-icon="📌" onclick="selectIcon(this)">📌</span>
+      <span class="annot-icon" data-icon="🔥" onclick="selectIcon(this)">🔥</span>
+      <span class="annot-icon" data-icon="⚡" onclick="selectIcon(this)">⚡</span>
+      <span class="annot-icon" data-icon="🎯" onclick="selectIcon(this)">🎯</span>
+      <span class="annot-icon" data-icon="📈" onclick="selectIcon(this)">📈</span>
+      <span class="annot-icon" data-icon="📉" onclick="selectIcon(this)">📉</span>
+      <span class="annot-icon" data-icon="🎮" onclick="selectIcon(this)">🎮</span>
+      <span class="annot-icon" data-icon="🏆" onclick="selectIcon(this)">🏆</span>
+      <span class="annot-icon" data-icon="💡" onclick="selectIcon(this)">💡</span>
+      <span class="annot-icon" data-icon="⚠️" onclick="selectIcon(this)">⚠️</span>
+      <span class="annot-icon" data-icon="🎁" onclick="selectIcon(this)">🎁</span>
+      <span class="annot-icon" data-icon="🛑" onclick="selectIcon(this)">🛑</span>
+    </div>
+    <div style="font-size:12px;color:#555;margin-bottom:6px">标注内容</div>
+    <input id="annotText" class="annot-input" placeholder="输入标注文字，如：S12版本上线" maxlength="30">
+    <div class="annot-actions">
+      <button class="annot-del" id="annotDelBtn" onclick="deleteAnnotation()" style="display:none">删 除</button>
+      <button class="annot-cancel" onclick="closeAnnotModal()">取 消</button>
+      <button class="annot-save" onclick="saveAnnotation()">保 存</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ── Data ─────────────────────────────────────────────────────────
@@ -560,7 +611,7 @@ function buildChart(data) {
       interaction:{mode:'index',intersect:false},
       plugins:{
         legend:{display:false},
-        annotation:{annotations: buildAnnotations(labels)},
+        annotation:{annotations: buildAllAnnotations(labels, 'dauChart')},
         tooltip:{...sharedTooltip, callbacks:{
           title: items => items[0].label,
           label: ctx => {
@@ -580,6 +631,8 @@ function buildChart(data) {
       }
     }
   });
+  registerAnnotClick(chartDau, 'dauChart', data);
+  renderAnnotChips('dauChart');
 
   // ── New Installs Chart ──────────────────────
   const newData  = data.map(d => d.n);
@@ -610,7 +663,7 @@ function buildChart(data) {
       interaction:{mode:'index',intersect:false},
       plugins:{
         legend:{display:false},
-        annotation:{annotations: buildAnnotations(labels)},
+        annotation:{annotations: buildAllAnnotations(labels, 'newChart')},
         tooltip:{...sharedTooltip, callbacks:{
           title: items => items[0].label,
           label: ctx => {
@@ -631,6 +684,8 @@ function buildChart(data) {
       }
     }
   });
+  registerAnnotClick(chartNew, 'newChart', data);
+  renderAnnotChips('newChart');
 }
 
 // ── Events Panel ──────────────────────────────────────────────────
@@ -1010,6 +1065,174 @@ function loadVersionAnnotations() {
     if (saved !== null) e.ver = saved;
   });
 }
+
+// ══════════════════════════════════════════════════════
+// ── User Data Label Annotations ──────────────────────
+// ══════════════════════════════════════════════════════
+
+// Storage key: 'jcc_annots_v1' → JSON array of {id, chartId, date, icon, text}
+const ANNOT_KEY = 'jcc_annots_v1';
+let userAnnots = [];   // all persisted annotations
+
+// current edit context
+let annotCtx = { chartId: null, date: null, dauVal: null, newVal: null, editId: null };
+
+function loadUserAnnots() {
+  try { userAnnots = JSON.parse(localStorage.getItem(ANNOT_KEY) || '[]'); } catch(e){ userAnnots = []; }
+}
+
+function saveUserAnnots() {
+  localStorage.setItem(ANNOT_KEY, JSON.stringify(userAnnots));
+}
+
+// ── Build annotation objects for Chart.js annotation plugin ──────
+function buildUserAnnotations(labels, chartId) {
+  const result = {};
+  const visible = userAnnots.filter(a => a.chartId === chartId && labels.includes(a.date));
+  visible.forEach(a => {
+    const idx = labels.indexOf(a.date);
+    // vertical line
+    result['ua_line_' + a.id] = {
+      type: 'line', xMin: idx, xMax: idx,
+      borderColor: 'rgba(26,115,232,.55)', borderWidth: 1.5, borderDash: [3, 3],
+    };
+    // label box
+    result['ua_lbl_' + a.id] = {
+      type: 'label',
+      xValue: idx, yValue: 'max',
+      xAdjust: 0, yAdjust: 20,
+      content: [a.icon + ' ' + a.text],
+      color: '#1a73e8',
+      backgroundColor: 'rgba(235,245,255,.94)',
+      borderColor: 'rgba(26,115,232,.4)', borderWidth: 1, borderRadius: 5,
+      font: { size: 10, weight: 'bold' },
+      padding: { x: 5, y: 3 },
+    };
+  });
+  return result;
+}
+
+// ── Merge event annotations + user annotations ────────────────────
+function buildAllAnnotations(labels, chartId) {
+  const evAnns  = buildAnnotations(labels);
+  const userAnns = buildUserAnnotations(labels, chartId);
+  return Object.assign({}, evAnns, userAnns);
+}
+
+// ── Render chips below chart ──────────────────────────────────────
+function renderAnnotChips(chartId) {
+  const chipContainer = document.getElementById(chartId === 'dauChart' ? 'dauAnnotChips' : 'newAnnotChips');
+  if (!chipContainer) return;
+  const visible = userAnnots.filter(a => a.chartId === chartId && a.date >= dateStart && a.date <= dateEnd);
+  if (!visible.length) { chipContainer.innerHTML = ''; return; }
+  chipContainer.innerHTML = visible.map(a =>
+    `<span class="annot-chip" title="点击编辑" onclick="openAnnotModal('${chartId}','${a.date}',null,null,'${a.id}')">${a.icon} ${a.text} <span style="color:#aaa;font-size:10px">${a.date}</span></span>`
+  ).join('');
+}
+
+// ── Register click listener on a chart ───────────────────────────
+function registerAnnotClick(chartInstance, chartId, dataArr) {
+  chartInstance.canvas.addEventListener('click', function(evt) {
+    const points = chartInstance.getElementsAtEventForMode(evt, 'index', {intersect: false}, true);
+    if (!points.length) return;
+    const idx = points[0].index;
+    const d = dataArr[idx];
+    if (!d) return;
+    openAnnotModal(chartId, d.d, d.l, d.n, null);
+  });
+}
+
+// ── Open modal ────────────────────────────────────────────────────
+function openAnnotModal(chartId, date, dauVal, newVal, editId) {
+  annotCtx = { chartId, date, dauVal, newVal, editId };
+  const isEdit = !!editId;
+  document.getElementById('annotChartTitle').textContent =
+    (chartId === 'dauChart' ? '📈 活跃趋势图' : '📥 新增趋势图') + ' · 数据标注';
+  let infoStr = `📅 ${date}`;
+  if (dauVal != null) infoStr += `　DAU: ${fmt(dauVal)}`;
+  if (newVal != null) infoStr += `　新增: ${fmt(newVal)}`;
+  document.getElementById('annotDateInfo').textContent = infoStr;
+
+  // fill existing values if editing
+  const existing = isEdit ? userAnnots.find(a => a.id === editId) : null;
+  document.getElementById('annotText').value = existing ? existing.text : '';
+
+  // reset icon selection
+  document.querySelectorAll('.annot-icon').forEach(el => el.classList.remove('selected'));
+  const targetIcon = existing ? existing.icon : '📌';
+  const iconEl = document.querySelector(`.annot-icon[data-icon="${targetIcon}"]`);
+  if (iconEl) iconEl.classList.add('selected');
+  else document.querySelector('.annot-icon').classList.add('selected');
+
+  document.getElementById('annotDelBtn').style.display = isEdit ? '' : 'none';
+  document.getElementById('annotModal').classList.add('open');
+  document.getElementById('annotText').focus();
+}
+
+function closeAnnotModal() {
+  document.getElementById('annotModal').classList.remove('open');
+}
+
+function selectIcon(el) {
+  document.querySelectorAll('.annot-icon').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function getSelectedIcon() {
+  const sel = document.querySelector('.annot-icon.selected');
+  return sel ? sel.dataset.icon : '📌';
+}
+
+function saveAnnotation() {
+  const text = document.getElementById('annotText').value.trim();
+  if (!text) { document.getElementById('annotText').focus(); return; }
+  const icon = getSelectedIcon();
+  const { chartId, date, editId } = annotCtx;
+
+  if (editId) {
+    // update existing
+    const a = userAnnots.find(a => a.id === editId);
+    if (a) { a.icon = icon; a.text = text; }
+  } else {
+    // create new
+    const id = 'u' + Date.now() + Math.random().toString(36).slice(2,6);
+    userAnnots.push({ id, chartId, date, icon, text });
+  }
+  saveUserAnnots();
+  closeAnnotModal();
+  refreshChartsAnnotations();
+}
+
+function deleteAnnotation() {
+  const { editId } = annotCtx;
+  if (!editId) return;
+  userAnnots = userAnnots.filter(a => a.id !== editId);
+  saveUserAnnots();
+  closeAnnotModal();
+  refreshChartsAnnotations();
+}
+
+// ── Refresh only annotations on both charts (no full rebuild) ─────
+function refreshChartsAnnotations() {
+  if (chartDau) {
+    const labels = filteredData.map(d => d.d);
+    chartDau.options.plugins.annotation.annotations = buildAllAnnotations(labels, 'dauChart');
+    chartDau.update();
+    renderAnnotChips('dauChart');
+  }
+  if (chartNew) {
+    const labels = filteredData.map(d => d.d);
+    chartNew.options.plugins.annotation.annotations = buildAllAnnotations(labels, 'newChart');
+    chartNew.update();
+    renderAnnotChips('newChart');
+  }
+}
+
+// ── Keyboard shortcut: Escape to close modal ─────────────────────
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAnnotModal(); });
+
+// ── Load on startup ───────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => { loadUserAnnots(); });
 </script>
 </body>
 </html>
